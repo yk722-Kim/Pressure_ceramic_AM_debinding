@@ -1,17 +1,14 @@
-# Debinding Gas-Pressure Model (Slit-Based Transport)
+# Debinding Gas-Pressure Model for ceramic AM
 
 This repository provides a physics-based Python implementation for estimating  
-**internal gas pressure during polymer-binder debinding** in ceramic additive manufacturing (VPP/SLA/DLP).  
+**internal gas pressure during polymer-binder debinding** in ceramic additive manufacturing.  
 The model computes:
 
 - Binder conversion α(t) using **Coats–Redfern** kinetic fitting  
 - Gas generation rate dα/dt  
-- Slit-based interfacial transport and effective venting time scale τ  
+- Interfacial transport and effective venting time scale τ  
 - Internal pressure evolution p_g(t) and normalized pressure p_g / p₀  
 - Visualization and CSV export for downstream analysis
-
-This code is intended for researchers studying debinding defects  
-(delamination, blistering, Z-cracks, XY-surface cracks, binder modulus effects).
 
 ---
 
@@ -28,12 +25,12 @@ Automatically estimates activation energy **E** and pre-exponential factor **A**
 
 ---
 
-### ✔ Slit-based venting model for interfacial binder layers  
-The pressure model assumes gas escapes primarily through a **developing interfacial slit**,  
+### ✔ Delamination due to internal gas pressure model  
+The pressure model assumes gas escapes primarily through a **interface**,  
 representing a delamination gap or transport channel:
 
 - Gap height grows: `g(α) = α · h_layer`
-- Slit permeability: `k = g² / 12`
+- Fracture permeability: `k = g² / 12`
 - Effective venting diffusivity: `D_eff = k P₀ / μ(T)`
 - Flow length increases as debinding progresses: `L_flow = max(α, α_min) · R_layer`
 - Venting timescale: `τ = L_flow² / D_eff`
@@ -128,7 +125,7 @@ Plots help identify:
 
 - Ideal gas behavior (pV = nRT)  
 - CO₂ as dominant pyrolysis product  
-- Slit-based permeability (parallel-plate approximation)  
+- Fracture permeability (parallel-plate approximation)  
 - Debinding proceeds from the outer radius inward  
 - α_min (10⁻³) prevents division-by-zero early in the simulation  
 - Viscosity via Sutherland's law (CO₂ parameters)
@@ -143,8 +140,8 @@ These constants are scientific model parameters,
 If you use or modify this code, please cite:
 
 ```
-Kim, Y. & Collaborators (2025).
-Slit-Based Gas Pressure Modeling for Binder Debinding in Ceramic Additive Manufacturing.
+Kim, Yuseok & Sobhani, Sadaf (2025).
+Mechanistic Insights into Debinding-induced Defects in VPP-printed Ceramics
 GitHub Repository.
 ```
 
