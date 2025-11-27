@@ -1,12 +1,12 @@
 # Debinding Gas-Pressure Model for ceramic AM
 
 This repository provides a physics-based Python implementation for estimating  
-**internal gas pressure during polymer-binder debinding** in ceramic additive manufacturing.  
+**internal gas pressure during polymer-binder debinding** in ceramic AM.  
 The model computes:
 
 - Binder conversion α(t) using **Coats–Redfern** kinetic fitting  
-- Gas generation rate dα/dt  
-- Interfacial transport and effective venting time scale τ  
+- Degree of decomposition rate dα/dt  
+- Interfacial transport and diffusion time scale τ  
 - Internal pressure evolution p_g(t) and normalized pressure p_g / p₀  
 - Visualization and CSV export for downstream analysis
 
@@ -21,7 +21,7 @@ Supports solid-state reaction models:
 - D3 (Crank)
 - F1 (First-order reaction)
 
-Automatically estimates activation energy **E** and pre-exponential factor **A**.
+Automatically estimates activation energy **E*** and pre-exponential factor **A**.
 
 ---
 
@@ -33,7 +33,7 @@ representing a delamination gap or transport channel:
 - Fracture permeability: `k = g² / 12`
 - Effective venting diffusivity: `D_eff = k P₀ / μ(T)`
 - Flow length increases as debinding progresses: `L_flow = max(α, α_min) · R_layer`
-- Venting timescale: `τ = L_flow² / D_eff`
+- Diffusion time scale for pressure relaxation over flow length: `τ = L_flow² / D_eff`
 
 This formulation captures early-stage gas accumulation due to:
 - small initial permeability,
@@ -115,7 +115,7 @@ A CSV file (e.g., `output_results.csv`) containing:
 
 Plots help identify:
 - gas accumulation stages,
-- early pressure peaks (before DTG maximum),
+- early pressure peaks,
 - delamination risk conditions,
 - transport-limited vs kinetics-limited regimes.
 
@@ -126,7 +126,6 @@ Plots help identify:
 - Ideal gas behavior (pV = nRT)  
 - CO₂ as dominant pyrolysis product  
 - Fracture permeability (parallel-plate approximation)  
-- Debinding proceeds from the outer radius inward  
 - α_min (10⁻³) prevents division-by-zero early in the simulation  
 - Viscosity via Sutherland's law (CO₂ parameters)
 
