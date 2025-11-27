@@ -49,9 +49,9 @@ This formulation captures early-stage gas accumulation due to:
 
 ```
 .
-├── debinding_model.py        # Main Python script
-├── example_data/             # Folder for example input CSV (user-provided)
-├── output/                   # Generated time-history results (optional)
+├── run.py        # Main Python script
+├── example_TGA.csv             # Example input CSV (user-provided)
+├── output_results.csv                   # Generated time-history results (optional)
 └── README.md
 ```
 
@@ -72,13 +72,13 @@ Your input CSV must contain the following **exact column names**:
 Place the file in:
 
 ```
-example_data/your_file.csv
+example_TGA.csv
 ```
 
 Then set in the Python script:
 
 ```python
-INPUT_CSV = "example_data/your_file.csv"
+INPUT_CSV = "example_TGA.csv"
 ```
 
 ---
@@ -94,7 +94,7 @@ pip install numpy pandas matplotlib
 ### 2️⃣ Run the model
 
 ```bash
-python debinding_model.py
+python run.py
 ```
 
 ### 3️⃣ Output
@@ -169,7 +169,7 @@ example_data/
 and point the script to it via:
 
 ```python
-INPUT_CSV = "example_data/your_dataset.csv"
+INPUT_CSV = "example_TGA.csv"
 ```
 
 ---
