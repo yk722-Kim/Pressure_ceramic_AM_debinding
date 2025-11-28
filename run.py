@@ -1,12 +1,12 @@
 """
-Debinding Gas-Pressure Model (Slit-Based Transport)
-Author: Your Name
+Debinding Gas-Pressure Model
+Author: Yuseok Kim and Sadaf Sobhani
 License: MIT
 
 This script computes:
  - Binder conversion α(t) via Coats–Redfern kinetic fitting
  - Gas generation rate dα/dt
- - Internal pressure p_g(t) using a slit-based interfacial transport model
+ - Internal pressure p_g(t) using a interfacial transport model
  - Output CSV with all time-history variables
 
 INPUT CSV FORMAT (TGA dataset)
@@ -153,7 +153,7 @@ denom = W0 - W_inf
 alpha_CR = (W0 - W_CR) / denom
 alpha_CR = np.clip(alpha_CR, 0.0, 0.999999)
 
-# Fit only the mid-range (0.1 < α < 0.9)
+# Fit only the mid-range (0.1 < α < 0.9), less than 0.1 and larger than 0.9 were eliminated.
 mask_fit = (alpha_CR > 0.1) & (alpha_CR < 0.9)
 T_fit = T_K_CR[mask_fit]
 alpha_fit = alpha_CR[mask_fit]
@@ -219,7 +219,7 @@ for i in range(len(t_s)):
 
 
 # ============================================================
-# 5. PRESSURE MODEL — SLIT TRANSPORT
+# 5. PRESSURE MODEL
 # ============================================================
 
 V_layer_tot = math.pi * R_layer**2 * h_layer
