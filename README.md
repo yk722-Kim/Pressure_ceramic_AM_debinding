@@ -1,100 +1,113 @@
-# Debinding Gas-Pressure Model for ceramic AM
+# Debinding Gas-Pressure Model for Ceramic VPP
 
-This repository provides a physics-based Python implementation for estimating  
-**internal gas pressure during polymer-binder debinding** in ceramic AM.  
-The model computes:
+This repository provides a physics-based Python implementation for estimating
+the **internal gas pressure evolution** during polymer-binder debinding in ceramic VPP,
+using a **TGA-derived kinetic model** and an **interfacial transport (slit) pressure-relaxation model**.
 
-- Binder conversion α(t) using **Coats–Redfern** kinetic fitting  
-- Degree of decomposition rate dα/dt  
-- Interfacial transport and diffusion time scale τ  
-- Internal pressure evolution p_g(t) and normalized pressure p_g / p₀  
-- Visualization and CSV export for downstream analysis
-
----
-
-## ✨ Key Features
-
-### ✔ Coats–Redfern kinetic fitting  
-Supports solid-state reaction models:
-- D1 (1D diffusion)
-- D2 (Jander)
-- D3 (Crank)
-- F1 (First-order reaction)
-
-Automatically estimates activation energy **E*** and pre-exponential factor **A**.
+The script computes:
+- Binder conversion **α(t)** via **Coats–Redfern** kinetic fitting (F1 model)
+- Decomposition rate **dα/dt**
+- Interfacial transport timescale **τ_diff(α, T)**
+- Internal pressure evolution **p_g(t)** and normalized pressure **p_g/p0**
+- CSV export and optional plots for downstream analysis
 
 ---
 
-### ✔ Delamination due to internal gas pressure model  
-The pressure model assumes gas escapes primarily through a **interface**,  
-representing a delamination gap or transport channel:
+## Key Features
 
-- Gap height grows: `g(α) = α · h_layer`
-- Fracture permeability: `k = g² / 12`
-- Effective venting diffusivity: `D_eff = k P₀ / μ(T)`
-- Flow length increases as debinding progresses: `L_flow = max(α, α_min) · R_layer`
-- Diffusion time scale for pressure relaxation over flow length: `τ = L_flow² / D_eff`
+### 1) Coats–Redfern kinetic fitting (F1 only)
+This implementation uses the **first-order reaction model (F1)**:
+- f(α) = 1 − α
+- g(α) = −ln(1 − α)
 
-This formulation captures early-stage gas accumulation due to:
-- small initial permeability,
-- strong viscosity dependence μ(T),
-- limited transport length at low α.
+From the Coats–Redfern linearization,
+the code estimates the activation energy **E** and pre-exponential factor **A**
+using the user-specified heating rate **β (K/min)**.
+
+### 2) Interfacial pressure accumulation and relaxation model
+The pressure calculation is carried out at the **polymer-dominated interlayer** scale,
+modeled as a thin cylindrical control region with specimen radius **r** and cohesive interlayer thickness **ℓ**:
+
+- Interlayer volume:  V_layer = π r² ℓ
+- Initial void volume: V_void0 = ϕ V_layer
+- Initial binder volume: V_binder0 = (1 − ϕ) V_layer
+- Evolving pore volume: V_p(α) = V_void0 + α V_binder0
+
+Gas generation is driven by the decomposition rate:
+- n0 = (ρ_binder V_binder0) / M_gas
+- dn/dt |_gen = n0 · dα/dt
+
+Pressure relaxation is modeled through a slit-like pathway that evolves with conversion:
+- δ(α) = α ℓ
+- k_frac(α) = δ(α)² / 12
+- D_p(α, T) = k_frac(α) · p0 / μ(T)
+- L(α) = max(α, α_min) · r
+- τ_diff(α, T) = L(α)² / D_p(α, T)
+
+The internal gas amount n(t) is updated by balancing generation and venting toward equilibrium:
+- n_eq(t) = (p0 V_p(α(t))) / (R T(t))
+
+Finally, pressure is computed using the ideal gas law in the evolving pore volume:
+- p_g(t) = n(t) R T(t) / V_p(α(t))
 
 ---
 
-## 📂 Repository Structure
+## Repository Structure
 
 ```
 .
-├── run.py        # Main Python script
-├── example_TGA.csv             # Example input CSV (user-provided)
-├── output_results.csv                   # Generated time-history results (optional)
+├── run.py # Main script
+├── example_TGA.csv # Example input TGA dataset
+├── output_results.csv # Generated output (created after running)
 └── README.md
 ```
 
+
 ---
 
-## 📄 Input CSV Format (TGA Data)
+## Input CSV Format (TGA Data)
 
 Your input CSV must contain the following **exact column names**:
 
-| Column name         | Description                              | Example |
-|---------------------|-------------------------------------------|---------|
-| `Temperature (°C)`  | Temperature history in Celsius            | 25 → 600 |
-| `Time (min)`        | Timestamp in minutes                      | 0 → 60 |
-| `Weight (%)`        | Remaining mass (%) from TGA               | 100 → 0 |
+| Column name         | Description                     |
+|---------------------|---------------------------------|
+| `Temperature (°C)`  | Temperature history in Celsius  |
+| `Time (min)`        | Elapsed time in minutes         |
+| `Weight (%)`        | Remaining mass (%) from TGA     |
 
-**Rows can be in any order** — the script sorts internally by time and temperature.
-
-Place the file in:
-
-```
-example_TGA.csv
-```
-
-Then set in the Python script:
-
-```python
-INPUT_CSV = "example_TGA.csv"
-```
+Rows can be unordered; the script internally sorts by time.
 
 ---
 
-## ▶️ How to Run
+## How to Run
 
-### 1️⃣ Install dependencies
-
+### 1) Install dependencies
 ```bash
 pip install numpy pandas matplotlib
-```
 
-### 2️⃣ Run the model
+
+### 2) Run
 
 ```bash
 python run.py
 ```
 
-### 3️⃣ Output
+### User Parameters to Edit (in run.py)
+
+At the top of run.py, you may edit:
+
+- INPUT_CSV, OUTPUT_CSV
+- Geometry:
+- R_layer : specimen radius r [m]
+- ell_layer: cohesive interlayer thickness ℓ [m]
+- Material / gas:
+- rho_binder [kg/m³]
+- M_gas [kg/mol] (default CO2)
+- phi_void initial void fraction ϕ
+- Coats–Redfern heating rate:
+- beta [K/min]
+
+### 3) Output
 
 A CSV file (e.g., `output_results.csv`) containing:
 
@@ -108,7 +121,7 @@ A CSV file (e.g., `output_results.csv`) containing:
 
 ---
 
-## 📊 Example Plots
+## Example Plots
 
 - **Pressure vs. Temperature (P/P0)**
 - **Binder conversion α vs. Temperature**
@@ -121,20 +134,20 @@ Plots help identify:
 
 ---
 
-## 📘 Model Assumptions & Notes
+## Model Assumptions & Notes
 
-- Ideal gas behavior (pV = nRT)  
-- CO₂ as dominant pyrolysis product  
-- Fracture permeability (parallel-plate approximation)  
-- α_min (10⁻³) prevents division-by-zero early in the simulation  
-- Viscosity via Sutherland's law (CO₂ parameters)
+- Ideal gas behavior: pV = nRT
+- CO₂ is used as a representative dominant gaseous product (via M_gas)
+- Interfacial transport uses a parallel-plate permeability approximation: k_frac = δ²/12
+- Gas viscosity μ(T) is computed using a Sutherland-type correlation for CO₂
+- α_min = 1e−3 is used only to avoid L(α) = 0 at α → 0 for numerical stability
 
 These constants are scientific model parameters,  
 **not user settings** and must remain unchanged.
 
 ---
 
-## 📎 Citation
+## Citation
 
 If you use or modify this code, please cite:
 
@@ -142,30 +155,6 @@ If you use or modify this code, please cite:
 Kim, Yuseok & Sobhani, Sadaf (2025).
 Mechanistic Insights into Debinding-induced Defects in VPP-printed Ceramics
 GitHub Repository.
-```
-
----
-
-## 📬 Contact
-
-If you have questions or wish to contribute improvements,  
-please open an issue or submit a pull request.
-
----
-
-# ❓ FAQ
-
-### Q. *Can I upload my own example dataset?*  
-Yes — simply place your CSV file into:
-
-```
-example_data/
-```
-
-and point the script to it via:
-
-```python
-INPUT_CSV = "example_TGA.csv"
 ```
 
 ---
