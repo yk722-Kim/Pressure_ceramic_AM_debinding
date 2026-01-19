@@ -107,7 +107,7 @@ At the top of run.py, you may edit:
 - Coats–Redfern heating rate:
 - beta [K/min]
 
-### 3) Output
+### 2) Output
 
 A CSV file (e.g., `output_results.csv`) containing:
 
