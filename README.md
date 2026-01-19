@@ -15,8 +15,8 @@ The script computes:
 
 ## Key Features
 
-### 1) Coats–Redfern kinetic fitting (F1 only)
-This implementation uses the **first-order reaction model (F1)**:
+### 1) Coats–Redfern kinetic fitting
+This implementation uses the **first-order reaction model**:
 - f(α) = 1 − α
 - g(α) = −ln(1 − α)
 
