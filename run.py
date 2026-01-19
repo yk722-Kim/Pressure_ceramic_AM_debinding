@@ -45,8 +45,8 @@ M_gas = 44e-3                # [kg/mol] CO2 molecular weight
 R_gas = 8.314                # [J/mol/K]
 P0 = 101325.0                # [Pa] ambient pressure
 
-# Initial void fraction in the interfacial control volume
-eps0_void = 0.02             # Example: 2% initial porosity/roughness volume
+# Initial void fraction (ϕ) in the interfacial control volume
+phi_void = 0.02             # Example: 2% initial porosity/roughness volume
 
 # ============================================================
 # INTERNAL CONSTANTS (fixed model parameters, not user-editable)
@@ -223,8 +223,8 @@ for i in range(len(t_s)):
 # ============================================================
 
 V_layer_tot = math.pi * R_layer**2 * h_layer
-V_void0   = eps0_void * V_layer_tot
-V_binder0 = (1 - eps0_void) * V_layer_tot
+V_void0   = phi_void * V_layer_tot
+V_binder0 = (1 - phi_void) * V_layer_tot
 
 m0    = rho_binder * V_binder0
 n_max = m0 / M_gas      # Max possible CO2 moles if α=1
