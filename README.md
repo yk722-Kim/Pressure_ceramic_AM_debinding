@@ -152,7 +152,7 @@ These constants are scientific model parameters,
 If you use or modify this code, please cite:
 
 ```
-Kim, Yuseok & Sobhani, Sadaf (2025).
+Kim, Yuseok & Sobhani, Sadaf (2025). Additive Manufacturing, 2026, 105130
 Mechanistic Insights into Debinding-induced Defects in VPP-printed Ceramics
 GitHub Repository.
 ```
